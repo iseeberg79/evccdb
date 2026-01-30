@@ -33,7 +33,7 @@ func Open(path string) (*Client, error) {
 
 	// Verify the database is accessible
 	if err := db.Ping(); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -61,7 +61,7 @@ func (c *Client) GetTables() ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query tables: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var tables []string
 	for rows.Next() {
@@ -103,7 +103,7 @@ func (c *Client) GetTableColumns(table string) ([]ColumnInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query columns for %s: %w", table, err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var columns []ColumnInfo
 	for rows.Next() {

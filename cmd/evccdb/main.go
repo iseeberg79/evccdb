@@ -47,8 +47,8 @@ func main() {
 	exportCmd.Flags().StringVar(&modeStr, "mode", "config", "Transfer mode: config, metrics, all")
 	exportCmd.Flags().StringVar(&tables, "tables", "", "Comma-separated table names (overrides mode)")
 	exportCmd.Flags().BoolVar(&verbose, "verbose", false, "Show progress")
-	exportCmd.MarkFlagRequired("source")
-	exportCmd.MarkFlagRequired("output")
+	_ = exportCmd.MarkFlagRequired("source")
+	_ = exportCmd.MarkFlagRequired("output")
 
 	// Import command
 	importCmd := &cobra.Command{
@@ -61,8 +61,8 @@ func main() {
 	importCmd.Flags().StringVar(&modeStr, "mode", "config", "Transfer mode: config, metrics, all")
 	importCmd.Flags().StringVar(&tables, "tables", "", "Comma-separated table names (overrides mode)")
 	importCmd.Flags().BoolVar(&verbose, "verbose", false, "Show progress")
-	importCmd.MarkFlagRequired("source")
-	importCmd.MarkFlagRequired("target")
+	_ = importCmd.MarkFlagRequired("source")
+	_ = importCmd.MarkFlagRequired("target")
 
 	// Transfer command
 	transferCmd := &cobra.Command{
@@ -78,8 +78,8 @@ func main() {
 	transferCmd.Flags().BoolVar(&verbose, "verbose", false, "Show progress")
 	transferCmd.Flags().StringVar(&renameLoadpoints, "rename-loadpoint", "", "Rename loadpoints: OldName:NewName,OldName2:NewName2")
 	transferCmd.Flags().StringVar(&renameVehicles, "rename-vehicle", "", "Rename vehicles: OldName:NewName,OldName2:NewName2")
-	transferCmd.MarkFlagRequired("from")
-	transferCmd.MarkFlagRequired("to")
+	_ = transferCmd.MarkFlagRequired("from")
+	_ = transferCmd.MarkFlagRequired("to")
 
 	// Rename command
 	renameCmd := &cobra.Command{
@@ -92,7 +92,7 @@ func main() {
 	renameCmd.Flags().StringVar(&renameVehicles, "vehicle", "", "Rename vehicles: OldName:NewName,OldName2:NewName2")
 	renameCmd.Flags().BoolVar(&dryRun, "dry-run", false, "Show what would be renamed without doing it")
 	renameCmd.Flags().BoolVar(&verbose, "verbose", false, "Show detailed output")
-	renameCmd.MarkFlagRequired("db")
+	_ = renameCmd.MarkFlagRequired("db")
 
 	// Delete command
 	deleteCmd := &cobra.Command{
