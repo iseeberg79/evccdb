@@ -19,13 +19,13 @@ A Go package for selective backup, restore, and transfer of [evcc](https://evcc.
 ### Library
 
 ```bash
-go get github.com/iseebe/evccdb
+go get github.com/iseeberg79/evccdb
 ```
 
 ### CLI Tool
 
 ```bash
-go install github.com/iseebe/evccdb/cmd/evccdb@latest
+go install github.com/iseeberg79/evccdb/cmd/evccdb@latest
 ```
 
 ## Quick Start
@@ -111,7 +111,7 @@ package main
 
 import (
     "context"
-    "github.com/iseebe/evccdb"
+    "github.com/iseeberg79/evccdb"
 )
 
 func main() {
@@ -137,7 +137,7 @@ func main() {
 ```go
 import (
     "os"
-    "github.com/iseebe/evccdb"
+    "github.com/iseeberg79/evccdb"
 )
 
 client, _ := evccdb.Open("evcc.db")
@@ -158,7 +158,7 @@ client.ExportJSON(f, opts)
 ```go
 import (
     "os"
-    "github.com/iseebe/evccdb"
+    "github.com/iseeberg79/evccdb"
 )
 
 client, _ := evccdb.Open("evcc.db")
