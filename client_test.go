@@ -5,11 +5,8 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	if client.db == nil {
 		t.Fatal("Database connection is nil")
@@ -17,11 +14,8 @@ func TestOpen(t *testing.T) {
 }
 
 func TestGetTables(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	tables, err := client.GetTables()
 	if err != nil {
@@ -48,11 +42,8 @@ func TestGetTables(t *testing.T) {
 }
 
 func TestTableExists(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	exists, err := client.TableExists("settings")
 	if err != nil {
@@ -74,11 +65,8 @@ func TestTableExists(t *testing.T) {
 }
 
 func TestGetTableColumns(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	cols, err := client.GetTableColumns("settings")
 	if err != nil {
@@ -105,11 +93,8 @@ func TestGetTableColumns(t *testing.T) {
 }
 
 func TestGetRowCount(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	count, err := client.GetRowCount("settings")
 	if err != nil {
@@ -122,11 +107,8 @@ func TestGetRowCount(t *testing.T) {
 }
 
 func TestResolveTables(t *testing.T) {
-	client, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
-	}
-	defer client.Close()
+	client, cleanup := createTestDB(t)
+	defer cleanup()
 
 	tests := []struct {
 		name     string
@@ -172,13 +154,27 @@ func TestResolveTables(t *testing.T) {
 	}
 }
 
-func TestClose(t *testing.T) {
-	client, err := Open("testdata/test.db")
+func TestResolveTablesValidation(t *testing.T) {
+	client, cleanup := createTestDB(t)
+	defer cleanup()
+
+	// Valid table names should work
+	_, err := client.ResolveTables(TransferOptions{Tables: []string{"settings", "configs"}})
 	if err != nil {
-		t.Fatalf("Failed to open database: %v", err)
+		t.Errorf("Valid table names should not error: %v", err)
 	}
 
-	err = client.Close()
+	// Invalid table name should error
+	_, err = client.ResolveTables(TransferOptions{Tables: []string{"valid", "invalid;DROP TABLE"}})
+	if err == nil {
+		t.Error("Invalid table name should error")
+	}
+}
+
+func TestClose(t *testing.T) {
+	client, _ := createTestDB(t)
+
+	err := client.Close()
 	if err != nil {
 		t.Fatalf("Failed to close database: %v", err)
 	}

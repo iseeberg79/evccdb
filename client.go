@@ -3,9 +3,20 @@ package evccdb
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var validIdentifier = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
+
+// ValidateIdentifier checks if a string is safe to use as a SQL identifier
+func ValidateIdentifier(name string) error {
+	if !validIdentifier.MatchString(name) {
+		return fmt.Errorf("invalid identifier: %q", name)
+	}
+	return nil
+}
 
 // Client represents a connection to an evcc SQLite database
 type Client struct {
@@ -146,6 +157,11 @@ func (c *Client) GetAllTables() []string {
 // ResolveTables returns the list of tables based on the transfer mode
 func (c *Client) ResolveTables(opts TransferOptions) ([]string, error) {
 	if len(opts.Tables) > 0 {
+		for _, t := range opts.Tables {
+			if err := ValidateIdentifier(t); err != nil {
+				return nil, err
+			}
+		}
 		return opts.Tables, nil
 	}
 

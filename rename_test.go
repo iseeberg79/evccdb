@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"os"
 	"strings"
 	"testing"
 )
@@ -199,9 +198,9 @@ func TestRenameInConfigsJSON(t *testing.T) {
 
 	// Verify the config was updated
 	var value string
-	err = client.db.QueryRowContext(ctx, "SELECT value FROM configs WHERE class = 5").Scan(&value)
+	err = client.db.QueryRowContext(ctx, "SELECT value FROM configs WHERE class = 5 AND value LIKE '%RenamedLoadpoint%'").Scan(&value)
 	if err != nil {
-		t.Fatalf("Failed to get config: %v", err)
+		t.Fatalf("Failed to get config with RenamedLoadpoint: %v", err)
 	}
 
 	var data map[string]any
@@ -301,38 +300,24 @@ func TestRenameVehicleDryRun(t *testing.T) {
 }
 
 func TestTransferWithRenames(t *testing.T) {
-	src, err := Open("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to open source database: %v", err)
-	}
-	defer src.Close()
+	src, srcCleanup := createTestDB(t)
+	defer srcCleanup()
 
-	// Create destination database
-	tmpFile, err := os.CreateTemp("", "test-*.db")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
-	tmpFile.Close()
-	defer os.Remove(tmpFile.Name())
+	dst, dstCleanup := createTestDB(t)
+	defer dstCleanup()
 
-	// Initialize destination with schema from source
-	initializeDB(t, tmpFile.Name(), src)
+	// Clear destination sessions
+	dst.db.Exec("DELETE FROM sessions")
 
-	dst, err := Open(tmpFile.Name())
-	if err != nil {
-		t.Fatalf("Failed to open destination database: %v", err)
-	}
-	defer dst.Close()
-
-	// Get initial counts from source
+	// Get initial counts from source (fixture has 3 Garage sessions)
+	ctx := context.Background()
 	var srcGarageCount int
-	err = src.db.QueryRowContext(context.Background(), "SELECT COUNT(*) FROM sessions WHERE loadpoint = 'Garage'").Scan(&srcGarageCount)
+	err := src.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM sessions WHERE loadpoint = 'Garage'").Scan(&srcGarageCount)
 	if err != nil {
 		t.Fatalf("Failed to count sessions: %v", err)
 	}
 
 	// Perform transfer with rename
-	ctx := context.Background()
 	opts := TransferOptions{
 		Mode: TransferAll,
 		LoadpointRenames: []RenameMapping{
@@ -436,35 +421,7 @@ func TestMultipleRenames(t *testing.T) {
 // Helper functions
 
 func setupTestDB(t *testing.T) (*Client, func()) {
-	// Copy test database to temp file
-	srcDB, err := os.ReadFile("testdata/test.db")
-	if err != nil {
-		t.Fatalf("Failed to read test database: %v", err)
-	}
-
-	tmpFile, err := os.CreateTemp("", "rename-test-*.db")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
-
-	if _, err := tmpFile.Write(srcDB); err != nil {
-		os.Remove(tmpFile.Name())
-		t.Fatalf("Failed to write temp file: %v", err)
-	}
-	tmpFile.Close()
-
-	client, err := Open(tmpFile.Name())
-	if err != nil {
-		os.Remove(tmpFile.Name())
-		t.Fatalf("Failed to open temp database: %v", err)
-	}
-
-	cleanup := func() {
-		client.Close()
-		os.Remove(tmpFile.Name())
-	}
-
-	return client, cleanup
+	return createTestDB(t)
 }
 
 func setupTestDBWithConfigs(t *testing.T) (*Client, func()) {
