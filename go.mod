@@ -3,7 +3,7 @@ module github.com/iseebe/evccdb
 go 1.21
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.18
+	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/spf13/cobra v1.10.2
 )
 
