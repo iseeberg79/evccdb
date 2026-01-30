@@ -13,11 +13,11 @@ func createTestDB(t *testing.T) (*Client, func()) {
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
-	tmpFile.Close()
+	_ = tmpFile.Close()
 
 	client, err := Open(tmpFile.Name())
 	if err != nil {
-		os.Remove(tmpFile.Name())
+		_ = os.Remove(tmpFile.Name())
 		t.Fatalf("Failed to open database: %v", err)
 	}
 
@@ -55,8 +55,8 @@ func createTestDB(t *testing.T) (*Client, func()) {
 		);
 	`
 	if _, err := client.db.Exec(schema); err != nil {
-		client.Close()
-		os.Remove(tmpFile.Name())
+		_ = client.Close()
+		_ = os.Remove(tmpFile.Name())
 		t.Fatalf("Failed to create schema: %v", err)
 	}
 
@@ -82,14 +82,14 @@ func createTestDB(t *testing.T) (*Client, func()) {
 			(5, '2023-04-05 10:00:00', 'eBikes', NULL);
 	`
 	if _, err := client.db.Exec(sampleData); err != nil {
-		client.Close()
-		os.Remove(tmpFile.Name())
+		_ = client.Close()
+		_ = os.Remove(tmpFile.Name())
 		t.Fatalf("Failed to insert sample data: %v", err)
 	}
 
 	cleanup := func() {
-		client.Close()
-		os.Remove(tmpFile.Name())
+		_ = client.Close()
+		_ = os.Remove(tmpFile.Name())
 	}
 
 	return client, cleanup

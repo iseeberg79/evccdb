@@ -60,7 +60,7 @@ func Transfer(ctx context.Context, src, dst *Client, opts TransferOptions) error
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	for _, table := range tables {
 		exists, err := dst.TableExists(table)
@@ -162,7 +162,7 @@ func copyTableWithTx(ctx context.Context, tx interface {
 	if err != nil {
 		return 0, fmt.Errorf("failed to query source data: %w", err)
 	}
-	defer srcRows.Close()
+	defer func() { _ = srcRows.Close() }()
 
 	copied := 0
 	for srcRows.Next() {
@@ -218,7 +218,7 @@ func (c *Client) CopyTablesTo(ctx context.Context, dst *Client, tables []string)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	for _, table := range tables {
 		_, err := copyTableWithTx(ctx, tx, c, dst, table)

@@ -307,7 +307,7 @@ func TestTransferWithRenames(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination sessions
-	dst.db.Exec("DELETE FROM sessions")
+	_, _ = dst.db.Exec("DELETE FROM sessions")
 
 	// Get initial counts from source (fixture has 3 Garage sessions)
 	ctx := context.Background()
@@ -501,7 +501,7 @@ func TestRenameYAMLStyleConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to query configs: %v", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	found := false
 	for rows.Next() {

@@ -110,7 +110,7 @@ Make sure evcc is stopped and not accessing the database before running this com
 	deleteCmd.Flags().BoolVar(&dryRun, "dry-run", false, "Show what would be deleted without doing it")
 	deleteCmd.Flags().BoolVarP(&assumeYes, "yes", "y", false, "Skip confirmation prompt")
 	deleteCmd.Flags().BoolVar(&verbose, "verbose", false, "Show detailed output")
-	deleteCmd.MarkFlagRequired("db")
+	_ = deleteCmd.MarkFlagRequired("db")
 
 	rootCmd.AddCommand(exportCmd, importCmd, transferCmd, renameCmd, deleteCmd)
 
@@ -125,7 +125,7 @@ func runExport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	mode := parseMode(modeStr)
 	opts := evccdb.TransferOptions{
@@ -149,7 +149,7 @@ func runExport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer outputFile.Close()
+	defer func() { _ = outputFile.Close() }()
 
 	if err := client.ExportJSON(outputFile, opts); err != nil {
 		return fmt.Errorf("export failed: %w", err)
@@ -164,13 +164,13 @@ func runImport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
 	}
-	defer sourceFile.Close()
+	defer func() { _ = sourceFile.Close() }()
 
 	client, err := evccdb.Open(target)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	mode := parseMode(modeStr)
 	opts := evccdb.TransferOptions{
@@ -203,13 +203,13 @@ func runTransfer(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open source database: %w", err)
 	}
-	defer src.Close()
+	defer func() { _ = src.Close() }()
 
 	dst, err := evccdb.Open(transferDst)
 	if err != nil {
 		return fmt.Errorf("failed to open destination database: %w", err)
 	}
-	defer dst.Close()
+	defer func() { _ = dst.Close() }()
 
 	mode := parseMode(modeStr)
 	opts := evccdb.TransferOptions{
@@ -266,7 +266,7 @@ func runRename(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	ctx := context.Background()
 
@@ -377,7 +377,7 @@ func runDelete(cmd *cobra.Command, args []string) error {
 		fmt.Print("WARNING: Make sure evcc is stopped and not accessing the database.\n")
 		fmt.Print("Type 'yes' to confirm and proceed: ")
 		var confirm string
-		fmt.Scanln(&confirm)
+		_, _ = fmt.Scanln(&confirm)
 		if confirm != "yes" {
 			fmt.Println("Operation cancelled")
 			return nil
@@ -388,8 +388,7 @@ func runDelete(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
-	defer client.Close()
-
+	defer func() { _ = client.Close() }()
 	ctx := context.Background()
 
 	// Parse and delete loadpoint sessions

@@ -109,8 +109,8 @@ func TestImportJSON(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination
-	dst.db.Exec("DELETE FROM settings")
-	dst.db.Exec("DELETE FROM configs")
+	_, _ = dst.db.Exec("DELETE FROM settings")
+	_, _ = dst.db.Exec("DELETE FROM configs")
 
 	srcCount, _ := src.GetRowCount("settings")
 
@@ -147,8 +147,8 @@ func TestExportImportRoundtrip(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination
-	dst.db.Exec("DELETE FROM settings")
-	dst.db.Exec("DELETE FROM configs")
+	_, _ = dst.db.Exec("DELETE FROM settings")
+	_, _ = dst.db.Exec("DELETE FROM configs")
 
 	// Import
 	importBuf := bytes.NewReader(buf.Bytes())

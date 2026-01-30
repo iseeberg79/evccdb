@@ -14,9 +14,9 @@ func TestTransferConfigTables(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination
-	dst.db.Exec("DELETE FROM settings")
-	dst.db.Exec("DELETE FROM configs")
-	dst.db.Exec("DELETE FROM caches")
+	_, _ = dst.db.Exec("DELETE FROM settings")
+	_, _ = dst.db.Exec("DELETE FROM configs")
+	_, _ = dst.db.Exec("DELETE FROM caches")
 
 	srcSettingsCount, _ := src.GetRowCount("settings")
 
@@ -42,8 +42,8 @@ func TestTransferMetricsTables(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination
-	dst.db.Exec("DELETE FROM sessions")
-	dst.db.Exec("DELETE FROM meters")
+	_, _ = dst.db.Exec("DELETE FROM sessions")
+	_, _ = dst.db.Exec("DELETE FROM meters")
 
 	srcSessionsCount, _ := src.GetRowCount("sessions")
 
@@ -69,8 +69,8 @@ func TestTransferWithExtraColumnInDest(t *testing.T) {
 	defer dstCleanup()
 
 	// Add extra column and clear data
-	dst.db.Exec("ALTER TABLE settings ADD COLUMN extra TEXT DEFAULT 'test_value'")
-	dst.db.Exec("DELETE FROM settings")
+	_, _ = dst.db.Exec("ALTER TABLE settings ADD COLUMN extra TEXT DEFAULT 'test_value'")
+	_, _ = dst.db.Exec("DELETE FROM settings")
 
 	srcCount, _ := src.GetRowCount("settings")
 
@@ -106,7 +106,7 @@ func TestTransferDryRun(t *testing.T) {
 	defer dstCleanup()
 
 	// Clear destination
-	dst.db.Exec("DELETE FROM settings")
+	_, _ = dst.db.Exec("DELETE FROM settings")
 
 	dstCountBefore, _ := dst.GetRowCount("settings")
 

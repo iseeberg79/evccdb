@@ -23,7 +23,7 @@ func (c *Client) RenameLoadpoint(ctx context.Context, oldName, newName string) (
 	if err != nil {
 		return result, fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// 1. Rename in sessions table
 	count, err := c.renameInSessions(ctx, tx, "loadpoint", oldName, newName)
@@ -61,7 +61,7 @@ func (c *Client) RenameVehicle(ctx context.Context, oldName, newName string) (Re
 	if err != nil {
 		return result, fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// 1. Rename in sessions table
 	count, err := c.renameInSessions(ctx, tx, "vehicle", oldName, newName)
@@ -124,7 +124,7 @@ func (c *Client) renameSettingsKeys(ctx context.Context, tx *sql.Tx, oldPrefix, 
 	if err != nil {
 		return 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	type keyValue struct {
 		key   string
@@ -169,7 +169,7 @@ func (c *Client) renameInConfigsJSON(ctx context.Context, tx *sql.Tx, class int,
 	if err != nil {
 		return 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	type configRow struct {
 		id    int
@@ -292,7 +292,7 @@ func (c *Client) countConfigsWithTitle(ctx context.Context, class int, title str
 	if err != nil {
 		return 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	count := 0
 	for rows.Next() {

@@ -24,7 +24,7 @@ func (c *Client) ImportJSON(r io.Reader, opts TransferOptions) error {
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// Determine which tables to import
 	var tablesToImport []string
