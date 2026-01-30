@@ -281,14 +281,14 @@ string | string
 
 ### Metrics Tables
 
-**meters** - Time-series meter readings (~12k entries)
+**meters** - Time-series meter readings
 ```
 meter   | ts       | val
 --------|----------|--------
 integer | datetime | float64
 ```
 
-**sessions** - Charging sessions (~3.5k entries)
+**sessions** - Charging sessions
 ```
 id        | created  | finished | loadpoint | identifier | vehicle | ...
 ----------|----------|----------|-----------|------------|---------|----
