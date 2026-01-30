@@ -471,3 +471,7 @@ MIT - See LICENSE file for details
 ## Contributing
 
 This project is part of the evcc ecosystem. For issues and feature requests, please use the project issue tracker.
+
+## Disclaimer
+
+Use at own risk. Actions taken cannot be undone. Create backups before doing modifications and ensure no parallel access on database file.
