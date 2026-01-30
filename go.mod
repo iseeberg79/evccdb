@@ -1,4 +1,4 @@
-module github.com/iseebe/evccdb
+module github.com/iseeberg79/evccdb
 
 go 1.21
 

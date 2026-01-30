@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iseebe/evccdb"
+	"github.com/iseeberg79/evccdb"
 	"github.com/spf13/cobra"
 )
 
