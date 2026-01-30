@@ -1,6 +1,6 @@
 # evccdb
 
-A professional Go package for selective backup, restore, and transfer of [evcc](https://evcc.io/) SQLite database data. Supports transferring data between database instances and selective export/import of configuration or metrics.
+A Go package for selective backup, restore, and transfer of [evcc](https://evcc.io/) SQLite database data. Supports transferring data between database instances and selective export/import of configuration or metrics.
 
 ## Features
 
@@ -281,14 +281,14 @@ string | string
 
 ### Metrics Tables
 
-**meters** - Time-series meter readings (~12k entries)
+**meters** - Time-series meter readings
 ```
 meter   | ts       | val
 --------|----------|--------
 integer | datetime | float64
 ```
 
-**sessions** - Charging sessions (~3.5k entries)
+**sessions** - Charging sessions
 ```
 id        | created  | finished | loadpoint | identifier | vehicle | ...
 ----------|----------|----------|-----------|------------|---------|----
@@ -471,3 +471,7 @@ MIT - See LICENSE file for details
 ## Contributing
 
 This project is part of the evcc ecosystem. For issues and feature requests, please use the project issue tracker.
+
+## Disclaimer
+
+Use at own risk. Actions taken cannot be undone. Create backups before doing modifications and ensure no parallel access on database file.
