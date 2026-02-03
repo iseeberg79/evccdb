@@ -1,6 +1,6 @@
 # evccdb
 
-A Go package for selective backup, restore, and transfer of [evcc](https://evcc.io/) SQLite database data. Supports transferring data between database instances and selective export/import of configuration or metrics.
+A Go package for selective backup, restore, and transfer of [evcc](https://evcc.io/) SQLite database data. Supports transferring data between database instances and selective export/import of configuration or metrics. **Note: maintain the ownership and permissions for the database file.**
 
 ## Features
 
